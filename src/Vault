@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Vault {
+    // 用于记录每个地址的余额
+    mapping(address => uint256) private _balances;
+    
+    // 事件声明
+    event Deposit(address indexed user, uint256 amount);
+    event Withdrawal(address indexed user, uint256 amount);
+    
+    /*
+      存款功能，允许用户向金库中存入资金
+     */
+    function deposit() external payable {
+        require(msg.value > 0, "Deposit amount must be greater than zero");
+        
+        _balances[msg.sender] += msg.value;
+        
+        emit Deposit(msg.sender, msg.value);
+    }
+    
+    /**
+     取款功能，允许用户从金库中取出资金
+     */
+    function withdraw(uint256 amount) external {
+        require(amount > 0, "Deposit amount must be greater than zero");
+        require(_balances[msg.sender] >= amount, "Insufficient balance");
+        
+        _balances[msg.sender] -= amount;
+        
+        // 转账给用户
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        
+        emit Withdrawal(msg.sender, amount);
+    }
+    
+    /**
+     * 查询用户余额
+     */
+    function balanceOf(address user) external view returns (uint256) {
+        return _balances[user];
+    }
+}
