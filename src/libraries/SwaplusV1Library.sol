@@ -18,7 +18,7 @@ library SwaplusV1Library {
   
   }
 
-  function getPool(address factory, address[] memory groupA, address[] memory groupB) internal pure returns (address pool) {
+  function getPool(address factory, address[] memory groupA, address[] memory groupB) public pure returns (address pool) {
     bytes memory bytecode = type(SwapPool).creationCode;
     bytes32 initCodeHash = keccak256(bytecode);
     (bytes32 tokensX, bytes32 tokensY, , ) = sortTokens(groupA, groupB);
