@@ -16,6 +16,12 @@ contract Vault {
     // 事件声明
     event Deposit(address indexed user, uint256 amount);
     event Withdrawal(address indexed user, uint256 amount);
+
+    constructor(address _swaplus, address _token, address _poolFactory) {
+        swaplus = Swaplus(_swaplus);
+        token = IERC20(_token);
+        poolFactory = PoolFactory(_poolFactory);
+    }
     
     /*
       存款功能，允许用户向金库中存入资金

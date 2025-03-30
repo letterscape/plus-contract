@@ -93,11 +93,11 @@ contract Swaplus {
     }
     if (isQuoteFailed) {
       // 根据B组的币种数额计算出所有币种的最佳数额
-      for (uint i = 0; i < amountsBDesired.length; i++) {
+      for (uint k = 0; k < amountsBDesired.length; k++) {
         // 计算同组其他币种的最佳数额
         for (uint j = 0; j < amountsBDesired.length; j++) {
-          if (i != j) {
-            uint amountBjOptimal = SwaplusV1Library.quote(amountsBDesired[i], reservesB[i], reservesB[j]);
+          if (k != j) {
+            uint amountBjOptimal = SwaplusV1Library.quote(amountsBDesired[k], reservesB[k], reservesB[j]);
             assert(amountBjOptimal <= amountsBDesired[j]);
             require(amountBjOptimal >= amountsBMin[j], 'SwaplusV1: INSUFFICIENT_B_AMOUNT');
             amountsB[j] = amountBjOptimal;
@@ -106,12 +106,12 @@ contract Swaplus {
         // 如果有一个币种没找到其他币种的最佳数额，则换其他币种
         // 计算不同组币种的最佳金额
         for (uint j = 0; j < amountsADesired.length; j++) {
-          uint amountAjOptimal = SwaplusV1Library.quote(amountsBDesired[i], reservesB[i], reservesA[j]);
+          uint amountAjOptimal = SwaplusV1Library.quote(amountsBDesired[k], reservesB[k], reservesA[j]);
           assert(amountAjOptimal <= amountsADesired[j]);
           require(amountAjOptimal >= amountsAMin[j], 'SwaplusV1: INSUFFICIENT_A_AMOUNT');
           amountsA[j] = amountAjOptimal;
         }
-        amountsB[i] = amountsBDesired[i];
+        amountsB[k] = amountsBDesired[k];
       }
     }
   }

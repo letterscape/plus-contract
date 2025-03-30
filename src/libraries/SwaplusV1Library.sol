@@ -139,7 +139,7 @@ library SwaplusV1Library {
     for (uint256 i = 0; i < groupALen; i++) {
       for (uint256 j = 0; j < groupBLen; j++) {
         require(groupA[i] != groupB[j], "SwaplusV1: IDENTICAL_TOKEN_ADDRESSES");
-        require(groupB[i] != address(0), "SwaplusV1: ZERO_TOKEN_ADDRESS");
+        require(groupB[j] != address(0), "SwaplusV1: ZERO_TOKEN_ADDRESS");
       }
       require(groupA[i] != address(0), "SwaplusV1: ZERO_TOKEN_ADDRESS");
     }

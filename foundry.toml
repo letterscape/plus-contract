@@ -4,7 +4,7 @@ out = 'out'
 libs = ['lib']
 solc = "0.8.20"
 optimizer = true
-optimizer_runs = 1000
+optimizer_runs = 20
 
 [rpc_endpoints]
 default_network = "http://127.0.0.1:8545"
