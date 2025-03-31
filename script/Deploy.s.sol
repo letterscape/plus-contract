@@ -35,9 +35,9 @@ contract DeployScript is Script {
     sp = new Swaplus(address(factory));
     console.log("create Swaplus contract: ", address(sp));
 
-    address usdc = initTokens();
+    address usdt = initTokens();
 
-    vault = new Vault(address(sp), usdc, address(factory));
+    vault = new Vault(address(sp), usdt, address(factory));
     console.log("create Vault contract: ", address(vault));
 
     vm.stopBroadcast();

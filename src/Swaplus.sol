@@ -4,7 +4,9 @@ pragma solidity >=0.8.0 <0.9.0;
 import "./interfaces/IPoolFactory.sol";
 import "./libraries/SwaplusV1Library.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/ISwapPool.sol";
+import {console} from "../lib/forge-std/src/console.sol";
 
 contract Swaplus {
 
@@ -134,7 +136,7 @@ contract Swaplus {
     
     // 将token转移到流动性池中
     transfromBatch(groupA, msg.sender, pool, amountsA);
-    transfromBatch(groupB, msg.sender, pool, amountsB);
+    // transfromBatch(groupB, msg.sender, pool, amountsB);
 
     // 分发LP-token
     liquidity = ISwapPool(pool).mint(to, groupA, groupB, amountsA, amountsB);
@@ -229,5 +231,7 @@ contract Swaplus {
         //     token.call(abi.encodeWithSelector(IERC20.transferFrom.selector, from, to, value));
         // require(success && (data.length == 0 || abi.decode(data, (bool))), 'STF');
         IERC20(token).transferFrom(from, to, value);
+        console.log("allowance: spender: ", ERC20(token).allowance(from, address(this)), address(this));
+        console.log('token: %s, from: %s, to: %s', ERC20(token).name(), from, to);
     }
 }

@@ -68,13 +68,22 @@ contract Vault {
       address to,
       uint deadline
     ) external {
-        swaplus.addLiquidity(groupA, groupB, amountsADesired, amountsBDesired, amountsAMin, amountsBMin, to, deadline);
         address pool = PoolFactory(poolFactory).getPools(groupA, groupB);
+        approveBatch(groupA, pool);
+        approveBatch(groupB, pool);
+        swaplus.addLiquidity(groupA, groupB, amountsADesired, amountsBDesired, amountsAMin, amountsBMin, to, deadline);
         // todo 去重
         _pools[msg.sender].push(pool);
     }   
 
     function poolsOf(address account) public view returns (address[] memory) {
         return _pools[account];
+    }
+
+    function approveBatch(address[] memory tokens, address spender) private {
+        for (uint i = 0; i < tokens.length; i++) {
+            IERC20(token).approve(spender, type(uint).max);
+            IERC20(token).approve(address(swaplus), type(uint).max);
+        } 
     }
 }

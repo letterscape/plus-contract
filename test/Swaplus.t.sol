@@ -4,6 +4,7 @@ import { Test, console } from "forge-std/Test.sol";
 import "../src/PoolFactory.sol";
 import "../src/SwapPool.sol";
 import "../src/Swaplus.sol";
+import "../src/Vault.sol";
 import "../src/CustomToken.sol";
 import "../src/libraries/WrapSafeMath.sol";
 
@@ -12,6 +13,8 @@ contract SwaplusTest is Test {
 
   PoolFactory public factory;
   Swaplus public app;
+  Vault public vault;
+  IERC20 usdt;
 
   address[] tokens;
   mapping(address => uint) oracle;
@@ -26,8 +29,9 @@ contract SwaplusTest is Test {
   function setUp() public {
     factory = new PoolFactory();
     app = new Swaplus(address(factory));
+    console.log("create Vault contract: ", address(vault));
     createTokens();
-
+    vault = new Vault(address(app), address(usdt), address(factory));
   }
 
   function test_allTokens() public {
@@ -117,7 +121,7 @@ contract SwaplusTest is Test {
     // oracle[address(sol)] = 1372100;
     console.log('sol created:', address(sol));
 
-    IERC20 usdt = new CustomToken("USDT", "USDT");
+    usdt = new CustomToken("USDT", "USDT");
     tokens.push(address(usdt));
     oracle[address(usdt)] = 500;
     // oracle[address(usdt)] = 10000;
@@ -276,6 +280,30 @@ contract SwaplusTest is Test {
     app.addLiquidity(groupA, groupB, amountsADesired, amountsBDesired, amountsAMin, amountsBMin, to, deadline);
     printK();
     vm.stopPrank();
+  }
+  function test_addLiquidity_vault() public {
+    reset();
+    createLiquidity_N();
+    console.log('pool created, current pool liquidity:');
+    SwapPool(getPool(groupA, groupB)).getVirtuals(groupA, groupB);
+    // printK();
+    address provider = makeAddr("provider");
+    vm.startPrank(provider);
+    address to = vm.addr(1);
+    uint32 deadline =  uint32(block.timestamp + 100000);
+    amountsADesired = new uint[](groupA.length);
+    amountsADesired[0] = 1000;
+    amountsBDesired = new uint[](groupB.length);
+    amountsAMin = new uint[](groupA.length);
+    amountsBMin = new uint[](groupB.length);
+    IERC20(usdt).approve(address(vault), type(uint).max);
+    vm.stopPrank();
+    vm.prank(provider);
+    vault.deposit(10000);
+    // vm.startPrank(address(vault));
+    vault.addLiquidity(groupA, groupB, amountsADesired, amountsBDesired, amountsAMin, amountsBMin, to, deadline);
+    // vm.stopPrank();
+    // printK();
   }
 
   function createLiquidity_N() public {
